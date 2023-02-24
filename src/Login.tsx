@@ -9,13 +9,31 @@ import {
   TextInput,
   Platform,
 } from "react-native";
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Colors from "./common/Colors";
 import { useNavigation } from "@react-navigation/core";
+import { isValidEmail, showToast } from "./utils/Utils";
+import { loginWithEmailAndPassword } from "./services/FirebaseService";
 
 const Login = () => {
+  const navigation = useNavigation();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const navigation = useNavigation()
+  const login = async () => {
+    if (email === "") {
+      showToast("Please enter email Id");
+    } else if (!isValidEmail(email)) {
+      showToast("Please enter valid email Id");
+    } else if (password === "") {
+      showToast("Please enter password");
+    } else {
+      let response = await loginWithEmailAndPassword(email, password);
+      if (response === true) {
+        navigation.navigate("HomeScreen");
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -33,8 +51,13 @@ const Login = () => {
             style={styles.emailIcon}
           />
           <TextInput
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+            }}
             placeholder="Enter your email Id"
             style={styles.textInput}
+            placeholderTextColor={Colors.mediumGrey}
           />
         </View>
 
@@ -44,14 +67,19 @@ const Login = () => {
             style={styles.passwordIcon}
           />
           <TextInput
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+            }}
             placeholder="Enter password"
             secureTextEntry={true}
             style={styles.passwordInput}
+            placeholderTextColor={Colors.mediumGrey}
           />
         </View>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Home");
+            login();
           }}
           style={styles.continueButtonContainer}
         >
@@ -59,17 +87,14 @@ const Login = () => {
         </TouchableOpacity>
         <Text style={styles.text}>
           Don't have an account?{" "}
-          <TouchableOpacity
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+          <Text
             onPress={() => {
               navigation.navigate("SignupScreen");
             }}
+            style={styles.signUpText}
           >
-            <Text style={styles.signUpText}>Sign Up!</Text>
-          </TouchableOpacity>
+            Sign Up!
+          </Text>
         </Text>
       </ScrollView>
     </View>
@@ -102,7 +127,7 @@ const styles = StyleSheet.create({
   },
   loginText2: {
     fontSize: 28,
-    color: Colors.BLACK_200,
+    color: Colors.BLACK,
     fontWeight: "bold",
   },
   textInputContainer: { flexDirection: "row" },
@@ -134,6 +159,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 5,
     },
+    color: Colors.BLACK,
     shadowRadius: 4,
     shadowOpacity: 0.06,
   },
@@ -148,6 +174,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 5,
     },
+    color: Colors.BLACK,
     shadowRadius: 4,
     shadowOpacity: 0.06,
   },

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "188712982344",
+    "project_id": "menufi-16170",
+    "storage_bucket": "menufi-16170.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188712982344:android:ac916545425d5a5acc457d",
+        "android_client_info": {
+          "package_name": "com.menufi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "188712982344-o69goao671putsqu16vt5p45buj8jmqr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9OmVZ_FjSqLecy4t2rHFnzzNkEyP_Awo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "188712982344-o69goao671putsqu16vt5p45buj8jmqr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

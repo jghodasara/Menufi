@@ -9,12 +9,38 @@ import {
   TextInput,
   Platform,
 } from "react-native";
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import Colors from "./common/Colors";
 import { useNavigation } from "@react-navigation/core";
+import { signupWithEmailAndPassword } from "./services/FirebaseService";
+import { isValidEmail, showToast } from "./utils/Utils";
 
 const SignUp = () => {
   const navigation = useNavigation();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fName, setFName] = useState("");
+  const [lName, setLName] = useState("");
+
+  const registerUser = async () => {
+    if (fName === "") {
+      showToast("Please enter first name");
+    } else if (lName === "") {
+      showToast("Please enter last name");
+    } else if (email === "") {
+      showToast("Please enter email Id");
+    } else if (!isValidEmail(email)) {
+      showToast("Please enter valid email Id");
+    } else if (password === "") {
+      showToast("Please enter password");
+    } else {
+      let response = await signupWithEmailAndPassword(email, password);
+      if (response === true) {
+        navigation.navigate("HomeScreen");
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -40,7 +66,15 @@ const SignUp = () => {
             source={require("./assets/person.png")}
             style={styles.fnameIcon}
           />
-          <TextInput placeholder="First Name" style={styles.textInput} />
+          <TextInput
+            value={fName}
+            onChangeText={(text) => {
+              setFName(text);
+            }}
+            placeholder="First Name"
+            style={styles.textInput}
+            placeholderTextColor={Colors.mediumGrey}
+          />
         </View>
 
         <View style={[styles.textInputContainer]}>
@@ -48,7 +82,15 @@ const SignUp = () => {
             source={require("./assets/person.png")}
             style={styles.lnameIcon}
           />
-          <TextInput placeholder="Last Name" style={styles.textInput2} />
+          <TextInput
+            value={lName}
+            onChangeText={(text) => {
+              setLName(text);
+            }}
+            placeholder="Last Name"
+            style={styles.textInput2}
+            placeholderTextColor={Colors.mediumGrey}
+          />
         </View>
 
         <View style={styles.textInputContainer}>
@@ -56,7 +98,15 @@ const SignUp = () => {
             source={require("./assets/email.png")}
             style={styles.emailIcon}
           />
-          <TextInput placeholder="Email Id" style={styles.textInput2} />
+          <TextInput
+            value={email}
+            onChangeText={(text) => {
+              setEmail(text);
+            }}
+            placeholder="Email Id"
+            style={styles.textInput2}
+            placeholderTextColor={Colors.mediumGrey}
+          />
         </View>
 
         <View style={styles.textInputContainer}>
@@ -65,14 +115,19 @@ const SignUp = () => {
             style={styles.passwordIcon}
           />
           <TextInput
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+            }}
             placeholder="Password"
             secureTextEntry={true}
             style={styles.textInput2}
+            placeholderTextColor={Colors.mediumGrey}
           />
         </View>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Home");
+            registerUser();
           }}
           style={styles.continueButtonContainer}
         >
@@ -80,17 +135,14 @@ const SignUp = () => {
         </TouchableOpacity>
         <Text style={styles.text}>
           Already have an account?{" "}
-          <TouchableOpacity
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+          <Text
             onPress={() => {
               navigation.navigate("LoginScreen");
             }}
+            style={styles.signUpText}
           >
-            <Text style={styles.signUpText}>Login!</Text>
-          </TouchableOpacity>
+            Login!
+          </Text>
         </Text>
       </ScrollView>
     </View>
@@ -174,6 +226,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 5,
     },
+    color: Colors.BLACK,
     shadowRadius: 4,
     shadowOpacity: 0.06,
   },
@@ -187,6 +240,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 5,
     },
+    color: Colors.BLACK,
     shadowRadius: 4,
     shadowOpacity: 0.06,
   },

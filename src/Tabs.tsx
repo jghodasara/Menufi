@@ -26,13 +26,12 @@ function Restaurant() {
 export default function HomeTabs() {
   return (
     <Tab.Navigator
-      initialRouteName={"HomeScreen"}
-      screenOptions={{ headerShown: false }}
+      initialRouteName={"Home"}
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ focused, color, size }) => {
           // return tab icons
-          if (route.name === "HomeScreen") {
+          if (route.name === "Home") {
             return (
               <Image
                 style={{ width: 30, height: 30, marginTop: 20 }}
@@ -74,7 +73,7 @@ export default function HomeTabs() {
         },
       }}
     >
-      <Tab.Screen name="HomeScreen" component={Restaurant} />
+      <Tab.Screen name="Home" component={Restaurant} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );

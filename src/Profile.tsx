@@ -7,61 +7,68 @@ import {
   Dimensions,
   ScrollView,
   Platform,
+  SafeAreaView,
 } from "react-native";
 import React, { Component } from "react";
 import Colors from "./common/Colors";
+import { useNavigation } from "@react-navigation/core";
 
 const Profile = () => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.mainContainer}>
-      <View style={[styles.subContainer]}>
-        <View style={styles.logoContainer}>
-          <View style={{ width: 25, height: 25 }} />
+    <>
+      <SafeAreaView style={{ backgroundColor: Colors.YELLOW }} />
+      <View style={styles.mainContainer}>
+        <View style={[styles.subContainer]}>
+          <View style={styles.header} />
+          <View style={styles.logoContainer}>
+            <View style={{ width: 25, height: 25 }} />
 
-          <Text style={styles.profileText}>Profile</Text>
-          <View style={{ width: 25, height: 25 }} />
+            <Text style={styles.profileText}>Profile</Text>
+            <View style={{ width: 25, height: 25 }} />
+          </View>
+          <View style={styles.headerLine} />
         </View>
-        <View style={styles.headerLine} />
+
+        <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              source={require("./assets/man.png")}
+              style={{ width: 120, height: 120 }}
+            />
+          </View>
+          <View style={styles.cardContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>First Name</Text>
+              <Text style={styles.text}>Coding</Text>
+            </View>
+            <View style={styles.line} />
+
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>Last Name</Text>
+              <Text style={styles.text}>Ninjas</Text>
+            </View>
+            <View style={styles.line} />
+
+            <View style={styles.textContainerLast}>
+              <Text style={styles.text}>Email Id</Text>
+              <Text style={styles.text}>codingninjas@gmail.com</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("LoginScreen");
+            }}
+            style={styles.logoutContainer}
+          >
+            <View style={styles.logoutSubContainer}>
+              <Text style={styles.logoutText}>Logout</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            source={require("./assets/man.png")}
-            style={{ width: 120, height: 120 }}
-          />
-        </View>
-        <View style={styles.cardContainer}>
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>First Name</Text>
-            <Text style={styles.text}>Coding</Text>
-          </View>
-          <View style={styles.line} />
-
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>Last Name</Text>
-            <Text style={styles.text}>Ninjas</Text>
-          </View>
-          <View style={styles.line} />
-
-          <View style={styles.textContainerLast}>
-            <Text style={styles.text}>Email Id</Text>
-            <Text style={styles.text}>codingninjas@gmail.com</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("LoginScreen");
-          }}
-          style={styles.logoutContainer}
-        >
-          <View style={styles.logoutSubContainer}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </>
   );
 };
 
@@ -72,9 +79,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.BLUE_LIGHT,
-    marginTop: Platform.OS === "ios" ? 50 : 0,
+    paddingTop: 0,
   },
-  subContainer: { flexDirection: "column", marginTop: 20 },
+  header: {
+    width: Dimensions.get("screen").width,
+    height: 50,
+    backgroundColor: Colors.YELLOW,
+    position: "absolute",
+  },
+  subContainer: { flexDirection: "column", paddingTop: 10 },
   logoContainer: {
     flexDirection: "row",
     width: Dimensions.get("screen").width,
@@ -84,14 +97,14 @@ const styles = StyleSheet.create({
   },
   profileText: {
     fontSize: 20,
-    color: Colors.BLACK,
+    color: Colors.WHITE,
     fontWeight: "bold",
   },
   headerLine: {
     backgroundColor: Colors.mediumGrey,
     width: Dimensions.get("screen").width,
     height: 0.5,
-    marginTop: 10,
+    marginTop: 15,
   },
   line: {
     backgroundColor: Colors.mediumGrey,
