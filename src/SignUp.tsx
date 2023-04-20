@@ -14,6 +14,10 @@ import Colors from "./common/Colors";
 import { useNavigation } from "@react-navigation/core";
 import { signupWithEmailAndPassword } from "./services/FirebaseService";
 import { isValidEmail, showToast } from "./utils/Utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import firestore from "@react-native-firebase/firestore";
+import { saveUser } from "./services/FirestoreService";
+import { useAppData } from "./provider/AppStateProvider";
 
 const SignUp = () => {
   const navigation = useNavigation();
@@ -22,6 +26,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [fName, setFName] = useState("");
   const [lName, setLName] = useState("");
+  const { activeUser, setActiveUser } = useAppData();
 
   const registerUser = async () => {
     if (fName === "") {
@@ -37,13 +42,40 @@ const SignUp = () => {
     } else {
       let response = await signupWithEmailAndPassword(email, password);
       if (response === true) {
-        navigation.navigate("HomeScreen");
+        let userSaved = await saveUser(fName, lName, password, email);
+        if (userSaved) {
+          if (activeUser.theme !== undefined) {
+            setActiveUser({ email: email, theme: activeUser.theme });
+            AsyncStorage.setItem(
+              "activeUserData",
+              JSON.stringify({ email: email, theme: activeUser.theme })
+            );
+            AsyncStorage.setItem("isLoggedIn", "true");
+            navigation.navigate("HomeScreen");
+          } else {
+            setActiveUser({ email: email, theme: "light" });
+            AsyncStorage.setItem(
+              "activeUserData",
+              JSON.stringify({ email: email, theme: "light" })
+            );
+            AsyncStorage.setItem("isLoggedIn", "true");
+            navigation.navigate("HomeScreen");
+          }
+        }
       }
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            activeUser.theme === "light" ? Colors.BLUE_LIGHT : Colors.BLACK,
+        },
+      ]}
+    >
       <Image
         style={{ width: 250, height: 150, marginTop: -30 }}
         source={require("./assets/MenuFi.png")}
@@ -58,7 +90,17 @@ const SignUp = () => {
       ></View>
       <ScrollView style={styles.scrollViewContainer}>
         <View style={styles.header}>
-          <Text style={styles.loginText2}>Create an Account</Text>
+          <Text
+            style={[
+              styles.loginText2,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+              },
+            ]}
+          >
+            Create an Account
+          </Text>
         </View>
 
         <View style={styles.textInputContainer}>
@@ -72,7 +114,17 @@ const SignUp = () => {
               setFName(text);
             }}
             placeholder="First Name"
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
             placeholderTextColor={Colors.mediumGrey}
           />
         </View>
@@ -88,7 +140,17 @@ const SignUp = () => {
               setLName(text);
             }}
             placeholder="Last Name"
-            style={styles.textInput2}
+            style={[
+              styles.textInput2,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
             placeholderTextColor={Colors.mediumGrey}
           />
         </View>
@@ -104,7 +166,17 @@ const SignUp = () => {
               setEmail(text);
             }}
             placeholder="Email Id"
-            style={styles.textInput2}
+            style={[
+              styles.textInput2,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
             placeholderTextColor={Colors.mediumGrey}
           />
         </View>
@@ -121,7 +193,17 @@ const SignUp = () => {
             }}
             placeholder="Password"
             secureTextEntry={true}
-            style={styles.textInput2}
+            style={[
+              styles.textInput2,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
             placeholderTextColor={Colors.mediumGrey}
           />
         </View>
@@ -133,7 +215,14 @@ const SignUp = () => {
         >
           <Text style={styles.continueText}>Sign Up</Text>
         </TouchableOpacity>
-        <Text style={styles.text}>
+        <Text
+          style={[
+            styles.text,
+            {
+              color: activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+            },
+          ]}
+        >
           Already have an account?{" "}
           <Text
             onPress={() => {

@@ -14,11 +14,14 @@ import Colors from "./common/Colors";
 import { useNavigation } from "@react-navigation/core";
 import { isValidEmail, showToast } from "./utils/Utils";
 import { loginWithEmailAndPassword } from "./services/FirebaseService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppData } from "./provider/AppStateProvider";
 
 const Login = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { activeUser, setActiveUser } = useAppData();
 
   const login = async () => {
     if (email === "") {
@@ -30,20 +33,54 @@ const Login = () => {
     } else {
       let response = await loginWithEmailAndPassword(email, password);
       if (response === true) {
-        navigation.navigate("HomeScreen");
+        if (activeUser.theme !== undefined) {
+          AsyncStorage.setItem(
+            "activeUserData",
+            JSON.stringify({ email: email, theme: activeUser.theme })
+          );
+          setActiveUser({ email: email, theme: activeUser.theme });
+          AsyncStorage.setItem("isLoggedIn", "true");
+          navigation.navigate("HomeScreen");
+        } else {
+          AsyncStorage.setItem(
+            "activeUserData",
+            JSON.stringify({ email: email, theme: "light" })
+          );
+          setActiveUser({ email: email, theme: "light" });
+          AsyncStorage.setItem("isLoggedIn", "true");
+          navigation.navigate("HomeScreen");
+        }
       }
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor:
+            activeUser.theme === "light" ? Colors.BLUE_LIGHT : Colors.BLACK,
+        },
+      ]}
+    >
       <Image
         style={{ width: 300, height: 300 }}
         source={require("./assets/splash.png")}
       />
       <ScrollView style={styles.scrollViewContainer}>
         <View style={styles.header}>
-          <Text style={styles.loginText2}>Login to Account</Text>
+          <Text
+            style={[
+              styles.loginText2,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+              },
+            ]}
+          >
+            Login to Account
+          </Text>
         </View>
         <View style={styles.textInputContainer}>
           <Image
@@ -56,7 +93,17 @@ const Login = () => {
               setEmail(text);
             }}
             placeholder="Enter your email Id"
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
             placeholderTextColor={Colors.mediumGrey}
           />
         </View>
@@ -73,7 +120,17 @@ const Login = () => {
             }}
             placeholder="Enter password"
             secureTextEntry={true}
-            style={styles.passwordInput}
+            style={[
+              styles.passwordInput,
+              {
+                color:
+                  activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
             placeholderTextColor={Colors.mediumGrey}
           />
         </View>
@@ -85,7 +142,14 @@ const Login = () => {
         >
           <Text style={styles.continueText}>Login</Text>
         </TouchableOpacity>
-        <Text style={styles.text}>
+        <Text
+          style={[
+            styles.text,
+            {
+              color: activeUser.theme === "light" ? Colors.BLACK : Colors.WHITE,
+            },
+          ]}
+        >
           Don't have an account?{" "}
           <Text
             onPress={() => {

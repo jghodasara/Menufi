@@ -55,11 +55,9 @@ export default function HomeTabs() {
             );
           }
         },
-      })}
-      tabBarOptions={{
         activeTintColor: Colors.YELLOW,
         inactiveTintColor: Colors.mediumGrey,
-        labelStyle: { marginTop: 20 },
+        tabBarLabelStyle: { marginTop: 20 },
         style: {
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
@@ -71,7 +69,7 @@ export default function HomeTabs() {
           shadowRadius: 6,
           backgroundColor: "#FFFFFF",
         },
-      }}
+      })}
     >
       <Tab.Screen name="Home" component={Restaurant} />
       <Tab.Screen name="Profile" component={Profile} />

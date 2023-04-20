@@ -1,6 +1,6 @@
 import React from "react";
 import type { Node } from "react";
-import { SafeAreaView, StyleSheet,StatusBar, View } from "react-native";
+import { SafeAreaView, StyleSheet, StatusBar, View } from "react-native";
 import SplashScreen from "./src/SplashScreen";
 import Login from "./src/Login";
 import SignUp from "./src/SignUp";
@@ -11,25 +11,28 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeTabs from "./src/Tabs";
+import AppStateProvider from "./src/provider/AppStateProvider";
 
 const Stack = createStackNavigator();
 
 const App: () => Node = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: false,
-        }}
-        initialRouteName={"SplashScreen"}
-      >
-        <Stack.Screen name="SplashScreen" component={SplashScreen} />
-        <Stack.Screen name="LoginScreen" component={Login} />
-        <Stack.Screen name="SignupScreen" component={SignUp} />
-        <Stack.Screen name="HomeScreen" component={HomeTabs} />
-        <Stack.Screen name="MenuScreen" component={Menu} />
-      </Stack.Navigator>
+      <AppStateProvider children={undefined}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            gestureEnabled: false,
+          }}
+          initialRouteName={"SplashScreen"}
+        >
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
+          <Stack.Screen name="LoginScreen" component={Login} />
+          <Stack.Screen name="SignupScreen" component={SignUp} />
+          <Stack.Screen name="HomeScreen" component={HomeTabs} />
+          <Stack.Screen name="MenuScreen" component={Menu} />
+        </Stack.Navigator>
+      </AppStateProvider>
     </NavigationContainer>
   );
 };

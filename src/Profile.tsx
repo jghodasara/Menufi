@@ -8,17 +8,54 @@ import {
   ScrollView,
   Platform,
   SafeAreaView,
+  TextInput,
 } from "react-native";
-import React, { Component } from "react";
+import React, { Component, useEffect, useState, useContext } from "react";
 import Colors from "./common/Colors";
 import { useNavigation } from "@react-navigation/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserData, updateUser } from "./services/FirestoreService";
+import { showToast } from "./utils/Utils";
+import { AppStateContext, useAppData } from "./provider/AppStateProvider";
+import { firebase } from "@react-native-firebase/auth";
 
 const Profile = () => {
   const navigation = useNavigation();
+  const [fName, setFName] = useState("");
+  const [lName, setLName] = useState("");
+  const [email, setEmail] = useState("");
+  const [id, setId] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { activeUser, setActiveUser } = useAppData();
+
+  useEffect(() => {
+    setSelectedIndex(activeUser.theme === "light" ? 0 : 1);
+    getUserInfo();
+  }, []);
+
+  const getUserInfo = async () => {
+    let userData = await getUserData(activeUser.email);
+    console.log("USER DATA", userData);
+    if (userData.length > 0) {
+      setFName(userData[0].fName);
+      setLName(userData[0].lName);
+      setEmail(userData[0].email);
+      setId(userData[0].id);
+    }
+  };
+
   return (
     <>
       <SafeAreaView style={{ backgroundColor: Colors.YELLOW }} />
-      <View style={styles.mainContainer}>
+      <View
+        style={[
+          styles.mainContainer,
+          {
+            backgroundColor:
+              activeUser.theme === "light" ? Colors.BLUE_LIGHT : Colors.BLACK,
+          },
+        ]}
+      >
         <View style={[styles.subContainer]}>
           <View style={styles.header} />
           <View style={styles.logoContainer}>
@@ -31,41 +68,290 @@ const Profile = () => {
         </View>
 
         <View style={styles.container}>
-          <View style={styles.imageContainer}>
+          <View
+            style={[
+              styles.imageContainer,
+              {
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.BLUE_LIGHT
+                    : Colors.BLACK,
+              },
+            ]}
+          >
             <Image
               source={require("./assets/man.png")}
               style={{ width: 120, height: 120 }}
             />
           </View>
-          <View style={styles.cardContainer}>
+          <View
+            style={[
+              styles.cardContainer,
+              {
+                backgroundColor:
+                  activeUser.theme === "light"
+                    ? Colors.WHITE
+                    : Colors.PLACEHOLDER,
+              },
+            ]}
+          >
             <View style={styles.textContainer}>
-              <Text style={styles.text}>First Name</Text>
-              <Text style={styles.text}>Coding</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      activeUser.theme === "light"
+                        ? Colors.BLACK
+                        : Colors.WHITE,
+                  },
+                ]}
+              >
+                First Name
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    color:
+                      activeUser.theme === "light"
+                        ? Colors.BLACK
+                        : Colors.WHITE,
+                  },
+                ]}
+                onChangeText={(text) => {
+                  setFName(text);
+                }}
+                value={fName}
+              />
+              {/* <Text style={styles.text}>Coding</Text> */}
             </View>
             <View style={styles.line} />
 
             <View style={styles.textContainer}>
-              <Text style={styles.text}>Last Name</Text>
-              <Text style={styles.text}>Ninjas</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      activeUser.theme === "light"
+                        ? Colors.BLACK
+                        : Colors.WHITE,
+                  },
+                ]}
+              >
+                Last Name
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    color:
+                      activeUser.theme === "light"
+                        ? Colors.BLACK
+                        : Colors.WHITE,
+                  },
+                ]}
+                onChangeText={(text) => {
+                  setLName(text);
+                }}
+                value={lName}
+              />
             </View>
             <View style={styles.line} />
 
             <View style={styles.textContainerLast}>
-              <Text style={styles.text}>Email Id</Text>
-              <Text style={styles.text}>codingninjas@gmail.com</Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      activeUser.theme === "light"
+                        ? Colors.BLACK
+                        : Colors.WHITE,
+                  },
+                ]}
+              >
+                Email Id
+              </Text>
+              <Text
+                style={[
+                  styles.text,
+                  {
+                    color:
+                      activeUser.theme === "light"
+                        ? Colors.BLACK
+                        : Colors.WHITE,
+                  },
+                ]}
+              >
+                {email}
+              </Text>
             </View>
           </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("LoginScreen");
+          <View
+            style={{
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-around",
+              alignItems: "center",
+              marginTop: 40,
             }}
-            style={styles.logoutContainer}
           >
-            <View style={styles.logoutSubContainer}>
-              <Text style={styles.logoutText}>Logout</Text>
+            <View style={styles.radioButtonContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedIndex(0);
+                  setActiveUser({ email: activeUser.email, theme: "light" });
+                  AsyncStorage.setItem(
+                    "activeUserData",
+                    JSON.stringify({ email: activeUser.email, theme: "light" })
+                  );
+                }}
+                style={styles.radioButton}
+              >
+                <View
+                  style={[
+                    styles.radioButtonIcon,
+                    {
+                      backgroundColor:
+                        selectedIndex === 0 ? Colors.mediumGrey : Colors.WHITE,
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedIndex(0);
+                  setActiveUser({ email: activeUser.email, theme: "light" });
+                  AsyncStorage.setItem(
+                    "activeUserData",
+                    JSON.stringify({ email: activeUser.email, theme: "light" })
+                  );
+                }}
+              >
+                <Text
+                  style={[
+                    styles.radioButtonText,
+                    {
+                      color:
+                        activeUser.theme === "light"
+                          ? Colors.BLACK
+                          : Colors.WHITE,
+                    },
+                  ]}
+                >
+                  Light
+                </Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+            <View style={styles.radioButtonContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedIndex(1);
+                  setActiveUser({ email: activeUser.email, theme: "dark" });
+                  AsyncStorage.setItem(
+                    "activeUserData",
+                    JSON.stringify({ email: activeUser.email, theme: "dark" })
+                  );
+                }}
+                style={styles.radioButton}
+              >
+                <View
+                  style={[
+                    styles.radioButtonIcon,
+                    {
+                      backgroundColor:
+                        selectedIndex === 1 ? Colors.mediumGrey : Colors.WHITE,
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedIndex(1);
+                  setActiveUser({ email: activeUser.email, theme: "dark" });
+                  AsyncStorage.setItem(
+                    "activeUserData",
+                    JSON.stringify({ email: activeUser.email, theme: "dark" })
+                  );
+                }}
+              >
+                <Text
+                  style={[
+                    styles.radioButtonText,
+                    {
+                      color:
+                        activeUser.theme === "light"
+                          ? Colors.BLACK
+                          : Colors.WHITE,
+                    },
+                  ]}
+                >
+                  Dark
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 40,
+            }}
+          >
+            <TouchableOpacity
+              onPress={async () => {
+                let response = await updateUser(fName, lName, id);
+                if (response) {
+                  showToast("Profile updated successfully");
+                } else {
+                  showToast("Something went wrong");
+                }
+              }}
+              style={styles.saveContainer}
+            >
+              <View style={styles.logoutSubContainer}>
+                <Text style={styles.saveText}>Save</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                firebase.auth().signOut();
+                AsyncStorage.setItem("isLoggedIn", "false");
+                navigation.navigate("LoginScreen");
+              }}
+              style={[
+                styles.logoutContainer,
+                {
+                  backgroundColor:
+                    activeUser.theme === "light"
+                      ? Colors.WHITE
+                      : Colors.PLACEHOLDER,
+                },
+              ]}
+            >
+              <View style={styles.logoutSubContainer}>
+                <Text
+                  style={[
+                    styles.logoutText,
+                    {
+                      color:
+                        activeUser.theme === "light"
+                          ? Colors.BLACK
+                          : Colors.WHITE,
+                    },
+                  ]}
+                >
+                  Logout
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </>
@@ -78,7 +364,6 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: Colors.BLUE_LIGHT,
     paddingTop: 0,
   },
   header: {
@@ -135,7 +420,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    backgroundColor: Colors.WHITE,
     alignSelf: "center",
   },
   textContainer: {
@@ -153,14 +437,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
   },
-  logoutContainer: {
+  saveContainer: {
     backgroundColor: Colors.YELLOW,
     borderRadius: 30,
     flexDirection: "column",
     padding: 20,
-    marginBottom: 20,
-    width: Dimensions.get("screen").width - 32,
-    marginTop: 40,
+    width: "47%",
     alignSelf: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -174,5 +456,50 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  saveText: { fontSize: 18, color: Colors.WHITE },
+  logoutContainer: {
+    borderRadius: 30,
+    flexDirection: "column",
+    padding: 20,
+    width: "47%",
+    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
   logoutText: { fontSize: 18, color: Colors.WHITE },
+  input: {
+    borderWidth: 0,
+    fontSize: 16,
+    color: Colors.BLACK,
+  },
+  radioButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 45,
+  },
+  radioButton: {
+    height: 20,
+    width: 20,
+    backgroundColor: Colors.WHITE_100,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.WHITE_200,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  radioButtonIcon: {
+    height: 14,
+    width: 14,
+    borderRadius: 7,
+    backgroundColor: Colors.mediumGrey,
+  },
+  radioButtonText: {
+    fontSize: 16,
+    marginLeft: 16,
+  },
 });
