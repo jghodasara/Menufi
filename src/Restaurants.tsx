@@ -27,7 +27,6 @@ const Restaurants = () => {
   const getRestaurantsList = async () => {
     let restaurants = await getRestaurantsFromFirestore();
     if (restaurants !== undefined && restaurants.length > 0) {
-      console.log("REST", restaurants);
       setRestaurantsData(restaurants);
     }
   };

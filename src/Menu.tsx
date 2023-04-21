@@ -21,8 +21,6 @@ const Menu = () => {
   const [menuData, setMenuData] = useState([]);
   const { activeUser } = useAppData();
 
-  console.log("Parameter received from restaurant screen", params.restaurantId);
-
   useEffect(() => {
     getMenu();
   }, []);

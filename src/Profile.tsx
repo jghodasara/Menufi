@@ -35,7 +35,6 @@ const Profile = () => {
 
   const getUserInfo = async () => {
     let userData = await getUserData(activeUser.email);
-    console.log("USER DATA", userData);
     if (userData.length > 0) {
       setFName(userData[0].fName);
       setLName(userData[0].lName);

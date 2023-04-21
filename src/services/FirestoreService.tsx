@@ -65,7 +65,6 @@ export const getUserData = async (email) => {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {
-          console.log("ID", documentSnapshot.id);
           let data = documentSnapshot.data();
           data.id = documentSnapshot.id;
           userData.push(data);
