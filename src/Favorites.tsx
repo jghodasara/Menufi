@@ -15,18 +15,18 @@ import Colors from "./common/Colors";
 import { useNavigation } from "@react-navigation/core";
 import {
   addToFav,
-  getRestaurantsFromFirestore,
+  getFavoriteRestaurants,
   removeFromFav,
 } from "./services/FirestoreService";
 import { useAppData } from "./provider/AppStateProvider";
 import RestaurantsList from "./RestaurantsList";
 
-const Restaurants = () => {
+const Favorite = () => {
   const navigation = useNavigation();
   const [restaurantsData, setRestaurantsData] = useState([]);
   const { activeUser } = useAppData();
   useEffect(() => {
-    getRestaurantsList();
+    getFavRestaurants();
     navigation.addListener("focus", onScreenFocused);
     return () => {
       navigation.removeListener("focus", onScreenFocused);
@@ -35,11 +35,11 @@ const Restaurants = () => {
 
   const onScreenFocused = () => {
     setRestaurantsData([]);
-    getRestaurantsList();
+    getFavRestaurants();
   };
 
-  const getRestaurantsList = async () => {
-    let restaurants = await getRestaurantsFromFirestore(activeUser.email);
+  const getFavRestaurants = async () => {
+    let restaurants = await getFavoriteRestaurants(activeUser.email);
     if (restaurants !== undefined && restaurants.length > 0) {
       setRestaurantsData(restaurants);
     }
@@ -67,13 +67,14 @@ const Restaurants = () => {
   const removeRestaurantFromFav = async (data) => {
     let response = await removeFromFav(data.docId);
     if (response) {
-      let updatedRestaurantsData = restaurantsData.map((item) => {
+      let deleteRestaurantIndex = "";
+      let updatedRestaurantsData = restaurantsData.map((item, index) => {
         if (item.id === data.id) {
-          item.isFav = false;
-          item.docId = "";
+          deleteRestaurantIndex = index;
         }
         return item;
       });
+      updatedRestaurantsData.splice(deleteRestaurantIndex, 1);
       setRestaurantsData(updatedRestaurantsData);
     }
   };
@@ -101,33 +102,41 @@ const Restaurants = () => {
           <View style={styles.headerLine} />
         </View>
 
-        <FlatList
-          numColumns={2}
-          keyExtractor={(item) => item.id + item.name}
-          contentContainerStyle={styles.contentContainer}
-          style={styles.flatListStyle}
-          showsVerticalScrollIndicator={false}
-          extraData={restaurantsData}
-          data={restaurantsData}
-          renderItem={({ item, index }) => (
-            <RestaurantsList
-              data={item}
-              onFavPress={(data, isFav) => {
-                if (isFav) {
-                  addRestaurantToFav(data);
-                } else {
-                  removeRestaurantFromFav(data);
-                }
-              }}
-            />
-          )}
-        />
+        {restaurantsData.length > 0 ? (
+          <FlatList
+            numColumns={2}
+            contentContainerStyle={styles.contentContainer}
+            style={styles.flatListStyle}
+            showsVerticalScrollIndicator={false}
+            data={restaurantsData}
+            renderItem={({ item, index }) => (
+              <RestaurantsList
+                data={item}
+                onFavPress={(data, isFav) => {
+                  if (isFav) {
+                    addRestaurantToFav(data);
+                  } else {
+                    removeRestaurantFromFav(data);
+                  }
+                }}
+              />
+            )}
+          />
+        ) : (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={{ color: Colors.GRAY_100, fontSize: 14 }}>
+              Your favorite restaurants will appear here
+            </Text>
+          </View>
+        )}
       </View>
     </>
   );
 };
 
-export default Restaurants;
+export default Favorite;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -167,8 +176,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     justifyContent: "space-between",
-    alignItems: "center",
-    alignSelf: "center",
   },
   flatListStyle: {
     width: Dimensions.get("screen").width,

@@ -12,7 +12,11 @@ import {
 } from "react-native";
 import React, { Component, useEffect, useState, useContext } from "react";
 import Colors from "./common/Colors";
-import { useNavigation } from "@react-navigation/core";
+import {
+  StackActions,
+  useNavigation,
+  NavigationAction,
+} from "@react-navigation/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData, updateUser } from "./services/FirestoreService";
 import { showToast } from "./utils/Utils";
@@ -34,13 +38,20 @@ const Profile = () => {
   }, []);
 
   const getUserInfo = async () => {
-    let userData = await getUserData(activeUser.email);
-    if (userData.length > 0) {
-      setFName(userData[0].fName);
-      setLName(userData[0].lName);
-      setEmail(userData[0].email);
-      setId(userData[0].id);
-    }
+    await getUserData(activeUser.email).then((res) => {
+      if (res !== null && res !== {}) {
+        setFName(res.fName);
+        setLName(res.lName);
+        setEmail(res.email);
+        setId(res.id);
+      }
+    });
+  };
+
+  const logout = async () => {
+    firebase.auth().signOut();
+    AsyncStorage.setItem("isLoggedIn", "false");
+    navigation.navigate("LoginScreen");
   };
 
   return (
@@ -320,9 +331,7 @@ const Profile = () => {
 
             <TouchableOpacity
               onPress={() => {
-                firebase.auth().signOut();
-                AsyncStorage.setItem("isLoggedIn", "false");
-                navigation.navigate("LoginScreen");
+                logout();
               }}
               style={[
                 styles.logoutContainer,

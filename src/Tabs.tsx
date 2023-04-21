@@ -6,6 +6,7 @@ import Restaurants from "./Restaurants";
 import Profile from "./Profile";
 import { createStackNavigator } from "@react-navigation/stack";
 import Menu from "./Menu";
+import Favorite from "./Favorites";
 
 const Tab = createBottomTabNavigator();
 
@@ -53,24 +54,25 @@ export default function HomeTabs() {
                 }
               />
             );
+          } else if (route.name === "Favorite") {
+            return (
+              <Image
+                style={{ width: 25, height: 25, marginTop: 20 }}
+                source={
+                  focused
+                    ? require("./assets/Home/favSelected.png")
+                    : require("./assets/Home/fav.png")
+                }
+              />
+            );
           }
         },
         activeTintColor: Colors.YELLOW,
         inactiveTintColor: Colors.mediumGrey,
-        tabBarLabelStyle: { marginTop: 20 },
-        style: {
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          height: Platform.OS === "android" ? 80 : 100,
-          elevation: 0,
-          shadowColor: "#000000",
-          shadowOffset: { width: 0, height: 10 }, // change this for more shadow
-          shadowOpacity: 0.4,
-          shadowRadius: 6,
-          backgroundColor: "#FFFFFF",
-        },
+        tabBarLabelStyle: { color: Colors.BLACK, marginTop: 20 },
       })}
     >
+      <Tab.Screen name="Favorite" component={Favorite} />
       <Tab.Screen name="Home" component={Restaurant} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>

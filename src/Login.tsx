@@ -40,6 +40,8 @@ const Login = () => {
           );
           setActiveUser({ email: email, theme: activeUser.theme });
           AsyncStorage.setItem("isLoggedIn", "true");
+          setEmail("");
+          setPassword("");
           navigation.navigate("HomeScreen");
         } else {
           AsyncStorage.setItem(
